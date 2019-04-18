@@ -204,11 +204,12 @@ def get_order(model, labels):
 
 
 def get_order_bayesnet(bayes_net, root):
+    visited = []
     for key, value in bayes_net.items():
         if value == {}:
             visited.append(key)
 
-    visited = []
+
     open_l = [root]
     while open_l != []:
         root = open_l.pop(0)

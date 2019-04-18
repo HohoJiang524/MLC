@@ -169,6 +169,7 @@ def csv_to_arff(X, label_i, savePath, datatype, isTrain=True):
         i = 0
         while i < len(label_i):
             attr_data = [int(j) for j in list(X.iloc[i, :])]
+
             label_data = [str(label_i[i])]
             row_data = attr_data + label_data
             data.append(row_data)
@@ -186,7 +187,7 @@ def csv_to_arff(X, label_i, savePath, datatype, isTrain=True):
 
     arff_data = arff.dumps(obj)
     if isTrain:
-        # w_file = open(savePath+label_i.name+"_train.arff", "w")
+        #w_file = open(savePath+label_i.name+"_train.arff", "w")
         w_file = open(savePath + "train.arff", "w")
         w_file.write(arff_data)
         w_file.close()
@@ -200,7 +201,7 @@ def csv_to_arff(X, label_i, savePath, datatype, isTrain=True):
 
 def run_eskdb(train, test, resultFile):
     command = """cd ../programme/ESKDB-on-numerical-data/
-    java -classpath ./bin/:./lib/weka.jar:./lib/commons-math3-3.6.1.jar:./lib/MLTools.jar MemorySolvedESKDBR.IndependentTest -t %s -T %s -K 5 p-S SKDB_R -I 1000 -L 2 -E 10 > %s
+    java -classpath ./bin/:./lib/weka.jar:./lib/commons-math3-3.6.1.jar:./lib/MLTools.jar MemorySolvedESKDBR.IndependentTest -t %s -T %s -K 5 -S SKDB_R -I 1000 -L 2 -E 10 > %s
     """ % (train, test, resultFile)
     return subprocess.call(command, shell=True)
 
@@ -228,7 +229,7 @@ def predict_ESKDB(X_train, X_test, y_train_i, y_test_i, savePath, datatype):
     csv_to_arff(X_test, y_test_i, savePath, datatype, isTrain=False)  # test
 
     # run eskdb
-    run_eskdb(os.path.abspath(savePath + "/train.arff"), os.path.abspath(savePath+"/test.arff"), os.path.abspath(savePath+"/result_temp.txt"))
+    run_eskdb(os.path.abspath(savePath +"/train.arff"), os.path.abspath(savePath+"/test.arff"), os.path.abspath(savePath+"/result_temp.txt"))
 
     # get prediction and probability of being positive.
     pred, prob = get_result(savePath)
@@ -286,11 +287,10 @@ def get_order(model, labels):
 
 
 def get_order_bayesnet(bayes_net, root):
+    visited = []
     for key, value in bayes_net.items():
         if value == {}:
             visited.append(key)
-
-    visited = []
     open_l = [root]
     while open_l != []:
         root = open_l.pop(0)
@@ -317,7 +317,6 @@ def ClassifierChain_ESKDB(data_train, data_test, label_train, label_test, savePa
             label = y_train.columns[index]  # the label to be fitted.
             y_train_i = y_train.loc[:, label]
             y_test_i = y_test.loc[:, label]
-
             pred, prob = predict_ESKDB(X_train, X_test, y_train_i, y_test_i, savePath, datatype)
             pred = pd.Series(pred, name=y_train_i.name)
             prob = pd.Series(prob, name=y_train_i.name)
