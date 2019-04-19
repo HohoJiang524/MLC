@@ -163,13 +163,12 @@ def csv_to_arff(X, label_i, savePath, datatype, isTrain=True):
             'data': data,
         }
     elif datatype=="nominal":
-        attributes = [(X.columns[i], ['0','1']) for i in range(len(X.columns))]
+        attributes = [('attr_' + X.columns[i], ['0','1']) for i in range(len(X.columns))]
         attributes.append(('label_' + label_i.name, ['0', '1']))
         data = []
         i = 0
         while i < len(label_i):
-            attr_data = [int(j) for j in list(X.iloc[i, :])]
-
+            attr_data = [str(int(j)) for j in list(X.iloc[i, :])]
             label_data = [str(label_i[i])]
             row_data = attr_data + label_data
             data.append(row_data)
@@ -188,11 +187,11 @@ def csv_to_arff(X, label_i, savePath, datatype, isTrain=True):
     arff_data = arff.dumps(obj)
     if isTrain:
         #w_file = open(savePath+label_i.name+"_train.arff", "w")
-        w_file = open(savePath + "train.arff", "w")
+        w_file = open(savePath + "/train.arff", "w")
         w_file.write(arff_data)
         w_file.close()
     elif not isTrain:
-        w_file = open(savePath + "test.arff", "w")
+        w_file = open(savePath + "/test.arff", "w")
         w_file.write(arff_data)
         w_file.close()
     else:
@@ -228,11 +227,13 @@ def predict_ESKDB(X_train, X_test, y_train_i, y_test_i, savePath, datatype):
     csv_to_arff(X_train, y_train_i, savePath, datatype, isTrain=True)  # train
     csv_to_arff(X_test, y_test_i, savePath, datatype, isTrain=False)  # test
 
+    if y_train_i.nunique()==1:
+        pred = np.array([0] * X_test.shape[0])
+        prob = np.array([0] * X_test.shape[0])
     # run eskdb
-    run_eskdb(os.path.abspath(savePath +"/train.arff"), os.path.abspath(savePath+"/test.arff"), os.path.abspath(savePath+"/result_temp.txt"))
-
-    # get prediction and probability of being positive.
-    pred, prob = get_result(savePath)
+    else:
+        success = run_eskdb(os.path.abspath(savePath + "/train.arff"), os.path.abspath(savePath + "/test.arff"), os.path.abspath(savePath+"/result_temp.txt"))
+        pred, prob = get_result(savePath)
 
     return pred, prob
 

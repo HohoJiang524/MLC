@@ -4,13 +4,18 @@ from eskdb_base import ClassifierChain_ESKDB
 import pandas as pd
 import os
 import sys
-
+import shutil
 if __name__ == "__main__":
 
     dataset = sys.argv[1]
     datatype = sys.argv[2]
     # setup
     savePath = "../result/ESKDB/ECC_ESKDB_bayesNet/"
+
+    temp_path = "../code/temp/LEAD_ESKDB_bayesNet/" + dataset + "/"
+    if os.path.exists(temp_path):
+        shutil.rmtree(temp_path)
+
     dataPath = '../data/' + dataset + "/"
     X_file = "X_scale.csv"
     y_file = "y.csv"
