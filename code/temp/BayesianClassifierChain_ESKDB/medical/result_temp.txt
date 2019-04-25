@@ -1,7 +1,0 @@
-[-t, /Users/jiangjunhao/Desktop/MLC-master/code/temp/BayesianClassifierChain_ESKDB/medical/train.arff, -T, /Users/jiangjunhao/Desktop/MLC-master/code/temp/BayesianClassifierChain_ESKDB/medical/test.arff, -K, 2, -S, SKDB_R, -I, 10, -L, 2, -E, 2]
-Dataset : train
-data size 	487
-Attribute size 	1450
-class size 	2
-
-Started learning

@@ -1,8 +1,0 @@
-[-t, /Users/jiangjunhao/Desktop/MLC-master/code/temp/ClassifierChain_ESKDB/tmc2007/train.arff, -T, /Users/jiangjunhao/Desktop/MLC-master/code/temp/ClassifierChain_ESKDB/tmc2007/test.arff, -K, 2, -S, SKDB_R, -I, 10, -L, 2, -E, 2]
-Dataset : train
-data size 	14372
-Attribute size 	1501
-class size 	2
-
-Started learning
-The 0th SKDB classifier has been built and smoothed

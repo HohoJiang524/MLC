@@ -8,8 +8,8 @@ import sys
 
 if __name__ == "__main__":
     dataset = sys.argv[1]
-
     # setup
+
     savePath = "../result/structure/bayesNet_NB_BCC/"
     dataPath = os.path.abspath("../data/" + dataset + "/")
     X_file = "X_scale.csv"

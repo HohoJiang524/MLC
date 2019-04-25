@@ -483,6 +483,7 @@ def two_fold(methods, data, label, dataset, datatype, ensemble=1, ordering="rand
     for j in range(5):
         print("time:", j)
         X_train, y_train, X_test, y_test = iterative_train_test_split(np.matrix(data), np.matrix(label), test_size=0.5)
+        #X_train, X_test, y_train, y_test = train_test_split(data, label, test_size=0.5)
         X_train = pd.DataFrame(X_train, columns=data.columns)
         X_test = pd.DataFrame(X_test, columns=data.columns)
         y_train = pd.DataFrame(y_train, columns=label.columns)

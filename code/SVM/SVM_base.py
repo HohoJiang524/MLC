@@ -3,11 +3,11 @@ import numpy as np
 import os
 import time
 import subprocess
-import re
 import random
-import arff
+
 
 from sklearn import svm
+from sklearn import linear_model
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import coverage_error
 from sklearn.metrics import label_ranking_loss
@@ -16,6 +16,7 @@ from sklearn import metrics
 from sklearn.metrics import zero_one_loss
 from sklearn.metrics import jaccard_similarity_score
 from skmultilearn.model_selection import iterative_train_test_split
+from sklearn.model_selection import train_test_split
 from pomegranate import BayesianNetwork
 from collections import defaultdict
 
@@ -142,7 +143,10 @@ def BR_test(X_train, X_test, y_train, y_test):
 
 def predict_SVM(X_train, X_test, y_train_i):
     if y_train_i.nunique() != 1:
-        clf = svm.SVC(kernel="linear", gamma='auto', probability=True)
+        if X_train.shape[0] > 2000:
+            clf = linear_model.SGDClassifier(penalty="l2", loss="log", max_iter=X_train.shape[0],tol=0.0001)
+        else:
+            clf = svm.SVC(kernel="linear", gamma='auto', probability=True)
         clf.fit(X_train, y_train_i)
         pred = clf.predict(X_test)
         prob = clf.predict_proba(X_test)[:, 1]
@@ -402,13 +406,24 @@ def two_fold(methods, data, label, dataset, ensemble=1, ordering="random", struc
     print("running", methods.__name__)
     print("setting:", ensemble, ordering, structure, lead)
     performance_df_all = pd.DataFrame()
-    for j in range(5):
+    if label.shape[1] >= 100:
+        time = 20
+    else:
+        time = 20
+    for j in range(time):
         print("time:", j)
+
         X_train, y_train, X_test, y_test = iterative_train_test_split(np.matrix(data), np.matrix(label), test_size=0.5)
         X_train = pd.DataFrame(X_train, columns=data.columns)
         X_test = pd.DataFrame(X_test, columns=data.columns)
         y_train = pd.DataFrame(y_train, columns=label.columns)
         y_test = pd.DataFrame(y_test, columns=label.columns)
+        """
+        X_train, X_test, y_train, y_test = train_test_split(data, label, test_size=0.5)
+        X_train.reset_index(inplace=True, drop=True)
+        X_test.reset_index(inplace=True, drop=True)
+        y_train.reset_index(inplace=True, drop=True)
+        y_test.reset_index(inplace=True, drop=True)"""
 
         for i in range(2):
             X_test, X_train = X_train, X_test
@@ -428,7 +443,7 @@ def two_fold(methods, data, label, dataset, ensemble=1, ordering="random", struc
             performance = evaluation(pred_ensemble, prob_ensemble, y_test)
             performance_df = pd.DataFrame.from_dict(performance, orient='index')
             performance_df_all = pd.concat([performance_df_all, performance_df], axis=1)
-    performance_df_all.columns = list(range(10))
+    performance_df_all.columns = list(range(time*2))
     return performance_df_all
 
 if __name__ == "__main__":
